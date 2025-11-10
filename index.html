@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Gestionnaire de favoris</title>
+  <link rel="stylesheet" href="css/pico.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="container">
+    <h1>🔖 Gestionnaire de favoris</h1>
+
+    <!-- Formulaire pour ajouter un favori -->
+    <form id="favoriForm">
+      <div>
+        <label for="titre">Titre :</label>
+        <input type="text" id="titre" placeholder="Ex: Mon site préféré" required>
+      </div>
+      <div>
+        <label for="url">URL :</label>
+        <input type="url" id="url" placeholder="https://exemple.com" required>
+      </div>
+      <div>
+        <label for="categorie">Catégorie :</label>
+        <select id="categorie">
+          <option value="general">Général</option>
+          <option value="travail">Travail</option>
+          <option value="loisirs">Loisirs</option>
+          <option value="apprentissage">Apprentissage</option>
+        </select>
+      </div>
+      <button type="submit">Ajouter</button>
+    </form>
+
+    <!-- Filtre par catégorie -->
+    <div>
+      <label for="filtreCategorie">Filtrer par catégorie :</label>
+      <select id="filtreCategorie">
+        <option value="toutes">Toutes</option>
+        <option value="general">Général</option>
+        <option value="travail">Travail</option>
+        <option value="loisirs">Loisirs</option>
+        <option value="apprentissage">Apprentissage</option>
+      </select>
+    </div>
+
+    <!-- Liste des favoris -->
+    <div id="listeFavoris"></div>
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

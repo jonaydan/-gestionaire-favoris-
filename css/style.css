@@ -1,0 +1,43 @@
+/* Style pour les favoris */
+#listeFavoris {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Carte de favori */
+.favori {
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background-color: var(--card-bg, #fff);
+  transition: transform 0.2s;
+}
+
+.favori:hover {
+  transform: translateY(-5px);
+}
+
+/* Lien du favori */
+.favori a {
+  color: var(--primary, #0066cc);
+  text-decoration: none;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Boutons d'action */
+.favori .actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  #listeFavoris {
+    grid-template-columns: 1fr;
+  }
+}
