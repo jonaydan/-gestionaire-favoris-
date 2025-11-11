@@ -4,6 +4,7 @@ const inputTitre = document.querySelector('#titre');
 const inputUrl = document.querySelector('#url');
 const selectCategorie = document.querySelector('#categorie');
 const inputTags = document.querySelector('#tags');
+const inputRecherche = document.querySelector('#recherche');
 const filtreCategorie = document.querySelector('#filtreCategorie');
 const listeFavoris = document.querySelector('#listeFavoris');
 
@@ -26,13 +27,22 @@ function sauvegarderFavoris() {
   localStorage.setItem('favoris', JSON.stringify(favoris));
 }
 
-// Afficher les favoris (filtrés par catégorie si nécessaire)
-function afficherFavoris() {
+// Afficher les favoris (filtrés par catégorie et recherche)
+function afficherFavoris(termeRecherche = '') {
   const categorieSelectionnee = filtreCategorie.value;
   listeFavoris.innerHTML = '';
 
   favoris
-    .filter(favori => categorieSelectionnee === 'toutes' || favori.categorie === categorieSelectionnee)
+    .filter(favori => {
+      // Filtre par catégorie ET par terme de recherche
+      const correspondCategorie = categorieSelectionnee === 'toutes' || favori.categorie === categorieSelectionnee;
+      const correspondRecherche =
+        favori.titre.toLowerCase().includes(termeRecherche) ||
+        favori.url.toLowerCase().includes(termeRecherche) ||
+        (favori.tags && favori.tags.some(tag => tag.includes(termeRecherche)));
+
+      return correspondCategorie && correspondRecherche;
+    })
     .forEach((favori, index) => {
       const favoriElement = document.createElement('div');
       favoriElement.className = 'favori';
@@ -115,7 +125,16 @@ formFavori.addEventListener('submit', (e) => {
 });
 
 // Écouter les changements de filtre
-filtreCategorie.addEventListener('change', afficherFavoris);
+filtreCategorie.addEventListener('change', () => {
+  const termeRecherche = inputRecherche.value.trim().toLowerCase();
+  afficherFavoris(termeRecherche);
+});
+
+// Écouter les changements dans la barre de recherche
+inputRecherche.addEventListener('input', () => {
+  const termeRecherche = inputRecherche.value.trim().toLowerCase();
+  afficherFavoris(termeRecherche);
+});
 
 // Initialiser l'application
 window.addEventListener('DOMContentLoaded', chargerFavoris);
