@@ -106,7 +106,7 @@ formFavori.addEventListener('submit', (e) => {
   const titre = inputTitre.value.trim();
   const url = inputUrl.value.trim();
   const categorie = selectCategorie.value;
-  const tags = inputTags.value.trim();
+  const tags = inputTags.value.trim(); // Récupère les tags
 
   if (titre !== '' && url !== '') {
     ajouterFavori(titre, url, categorie, tags);

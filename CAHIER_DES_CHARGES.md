@@ -12,9 +12,10 @@
 ## 🎯 Objectif du Projet
 
 Créer une application web responsive et fonctionnelle permettant de :
-- Ajouter des favoris (sites web) avec titre, URL et catégorie
+- Ajouter des favoris (sites web) avec titre, URL, catégorie et tags
 - Afficher les favoris dans une interface moderne et responsive
 - Filtrer les favoris par catégorie
+- Organiser les favoris avec des tags personnalisés
 - Supprimer des favoris
 - Sauvegarder les données localement (localStorage)
 
@@ -95,6 +96,7 @@ gestionnaire-favoris/
   - Champ "Titre" (input text)
   - Champ "URL" (input url)
   - Menu déroulant "Catégorie" (select)
+  - Champ "Tags" (input text) - Séparés par des virgules
   - Bouton "Ajouter" (submit)
 </form>
 ```
@@ -270,23 +272,120 @@ window.addEventListener('DOMContentLoaded', chargerFavoris);
 
 ---
 
+### ✅ Étape 6 : Ajout de la Fonctionnalité Tags (Version 1.1)
+
+**Date :** 11 novembre 2025
+
+**Actions effectuées :**
+
+#### 6.1 Mise à jour du HTML
+- Ajout d'un champ `<input type="text" id="tags">` dans le formulaire
+- Placeholder : "Ex: javascript, css, design"
+- Position : Après le champ "Catégorie", avant le bouton "Ajouter"
+
+#### 6.2 Mise à jour du JavaScript
+
+**Sélection de l'élément :**
+```javascript
+const inputTags = document.querySelector('#tags');
+```
+
+**Fonction `ajouterFavori` modifiée :**
+```javascript
+function ajouterFavori(titre, url, categorie, tags) {
+  // Conversion des tags en tableau
+  const tagsTableau = tags ? 
+    tags.split(',')
+        .map(tag => tag.trim().toLowerCase())
+        .filter(tag => tag !== '') 
+    : [];
+  
+  // Ajout du favori avec les tags
+  favoris.push({
+    titre, url, categorie,
+    tags: tagsTableau,
+    dateAjout: new Date().toISOString()
+  });
+}
+```
+
+**Fonction `afficherFavoris` modifiée :**
+```javascript
+// Affichage conditionnel des tags
+const tagsHtml = favori.tags && favori.tags.length > 0 
+  ? `<p><small>Tags: ${favori.tags.map(tag => 
+      `<span class="tag">${tag}</span>`
+    ).join(' ')}</small></p>`
+  : '';
+```
+
+**Écouteur de formulaire mis à jour :**
+```javascript
+formFavori.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const titre = inputTitre.value.trim();
+  const url = inputUrl.value.trim();
+  const categorie = selectCategorie.value;
+  const tags = inputTags.value.trim(); // Nouveau paramètre
+  
+  if (titre !== '' && url !== '') {
+    ajouterFavori(titre, url, categorie, tags);
+    formFavori.reset();
+  }
+});
+```
+
+#### 6.3 Mise à jour du CSS
+
+**Styles pour les badges de tags :**
+```css
+.tag {
+  display: inline-block;
+  background-color: var(--primary-focus, #0066cc33);
+  color: var(--primary, #0066cc);
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.3rem;
+  font-size: 0.85rem;
+  margin-right: 0.3rem;
+}
+```
+
+#### 6.4 Correction de bugs
+- Suppression du doublon d'écouteur d'événements pour le formulaire
+- Optimisation du code pour éviter les conflits
+
+**Résultat :**
+- ✅ Les tags sont fonctionnels
+- ✅ Affichage visuel attractif avec badges
+- ✅ Persistance dans le localStorage
+- ✅ Code propre et optimisé
+
+---
+
 ## 🔧 Fonctionnalités Détaillées
 
 ### 1. Ajout de Favoris
 
 **Processus :**
-1. L'utilisateur remplit le formulaire (titre, URL, catégorie)
+1. L'utilisateur remplit le formulaire (titre, URL, catégorie, tags optionnels)
 2. Il clique sur "Ajouter"
 3. Le formulaire est validé :
-   - Les champs ne doivent pas être vides
+   - Les champs titre et URL ne doivent pas être vides
    - L'URL doit être valide (http:// ou https://)
    - L'URL ne doit pas déjà exister
-4. Si OK : le favori est ajouté et affiché
+   - Les tags sont optionnels et séparés par des virgules
+4. Si OK : le favori est ajouté et affiché avec ses tags
 5. Si KO : un message d'alerte s'affiche
 
 **Messages d'erreur :**
 - "Veuillez entrer une URL valide (ex: https://exemple.com)"
 - "Ce favori existe déjà !"
+
+**Exemple de saisie :**
+- Titre : "MDN Web Docs"
+- URL : "https://developer.mozilla.org"
+- Catégorie : "Apprentissage"
+- Tags : "javascript, html, css, documentation"
 
 ### 2. Affichage des Favoris
 
@@ -295,6 +394,7 @@ window.addEventListener('DOMContentLoaded', chargerFavoris);
 - Cartes avec effet de survol (élévation)
 - Liens cliquables qui s'ouvrent dans un nouvel onglet
 - Affichage de la catégorie
+- Affichage des tags sous forme de badges colorés (si présents)
 - Bouton de suppression visible
 
 ### 3. Filtrage par Catégorie
@@ -330,6 +430,36 @@ window.addEventListener('DOMContentLoaded', chargerFavoris);
 - Pas besoin de serveur
 - Fonctionne hors ligne
 - Rapide
+
+### 6. Gestion des Tags
+
+**Fonctionnalité ajoutée le 11 novembre 2025**
+
+**Caractéristiques :**
+- Champ de saisie pour les tags séparés par des virgules
+- Conversion automatique en tableau (ex: "js, css" → ["js", "css"])
+- Normalisation : trim() et toLowerCase() appliqués
+- Affichage visuel avec badges colorés
+- Les tags vides sont automatiquement filtrés
+
+**Processus technique :**
+1. L'utilisateur entre des tags séparés par des virgules (ex: "JavaScript, CSS, Design")
+2. Le code JavaScript convertit la chaîne en tableau
+3. Chaque tag est nettoyé (espaces supprimés, minuscules)
+4. Les tags sont stockés dans le localStorage avec le favori
+5. À l'affichage, chaque tag est rendu dans un badge stylisé
+
+**Exemple de tags :**
+```javascript
+tags: ["javascript", "css", "design", "frontend"]
+```
+
+**Affichage :**
+```html
+<span class="tag">javascript</span>
+<span class="tag">css</span>
+<span class="tag">design</span>
+```
 
 ---
 
@@ -396,6 +526,16 @@ window.addEventListener('DOMContentLoaded', chargerFavoris);
 - **Résultat attendu :** La grille s'adapte automatiquement
 - **Statut :** ✅ Validé
 
+#### ✅ Test 8 : Ajout de tags
+- **Action :** Ajouter un favori avec tags (ex: "js, css, html")
+- **Résultat attendu :** Les tags apparaissent sous forme de badges
+- **Statut :** ✅ Validé
+
+#### ✅ Test 9 : Tags persistants
+- **Action :** Ajouter des tags puis rafraîchir la page
+- **Résultat attendu :** Les tags sont toujours présents
+- **Statut :** ✅ Validé
+
 ### Compatibilité Navigateurs
 
 **Testés et fonctionnels :**
@@ -419,18 +559,21 @@ window.addEventListener('DOMContentLoaded', chargerFavoris);
     "titre": "Mistral AI",
     "url": "https://mistral.ai",
     "categorie": "apprentissage",
+    "tags": ["ia", "chatbot", "llm"],
     "dateAjout": "2025-11-11T10:30:00.000Z"
   },
   {
     "titre": "GitHub",
     "url": "https://github.com",
     "categorie": "travail",
+    "tags": ["git", "code", "versioning"],
     "dateAjout": "2025-11-11T11:15:00.000Z"
   },
   {
     "titre": "Netflix",
     "url": "https://netflix.com",
     "categorie": "loisirs",
+    "tags": ["streaming", "films", "séries"],
     "dateAjout": "2025-11-11T12:00:00.000Z"
   }
 ]
@@ -438,9 +581,10 @@ window.addEventListener('DOMContentLoaded', chargerFavoris);
 
 ### Taille Estimée
 
-- 1 favori ≈ 150-200 octets
+- 1 favori sans tags ≈ 150-200 octets
+- 1 favori avec tags ≈ 200-300 octets
 - Capacité max ≈ 5 Mo
-- **Capacité estimée :** ~25 000 favoris (largement suffisant !)
+- **Capacité estimée :** ~20 000 favoris avec tags (largement suffisant !)
 
 ---
 
@@ -662,6 +806,16 @@ window.addEventListener('DOMContentLoaded', chargerFavoris);
 - ✅ Validation des URLs
 - ✅ Détection des doublons
 
+### Version 1.1 (11 novembre 2025)
+- ✅ Ajout de la fonctionnalité tags
+- ✅ Champ de saisie pour les tags (séparés par virgules)
+- ✅ Conversion automatique en tableau
+- ✅ Normalisation des tags (trim, lowercase)
+- ✅ Affichage visuel avec badges colorés
+- ✅ Styles CSS pour les tags
+- ✅ Persistance des tags dans localStorage
+- ✅ Correction du doublon d'écouteur d'événements
+
 ---
 
 ## 👨‍💻 Développeur
@@ -686,6 +840,7 @@ window.addEventListener('DOMContentLoaded', chargerFavoris);
 
 ## ✅ Checklist de Livraison
 
+### Version 1.0
 - ✅ Structure du projet créée
 - ✅ Fichier HTML validé
 - ✅ Fichiers CSS fonctionnels
@@ -694,6 +849,15 @@ window.addEventListener('DOMContentLoaded', chargerFavoris);
 - ✅ Application responsive
 - ✅ Compatibilité navigateurs OK
 - ✅ Documentation complète (ce document)
+
+### Version 1.1 (avec Tags)
+- ✅ Champ tags ajouté au formulaire
+- ✅ Fonction de conversion tags implémentée
+- ✅ Affichage des tags dans les cartes
+- ✅ Styles CSS pour les badges
+- ✅ Tests tags effectués et validés
+- ✅ Code optimisé (suppression des doublons)
+- ✅ Documentation mise à jour
 
 ---
 
